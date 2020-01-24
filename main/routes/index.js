@@ -24,7 +24,7 @@ useNewUrlParser: true,
 console.log('DB Connection Error: ${err.message}');
 });
 const userScheme = new Schema({
-  id: String,
+  id: Number,
   firstName: String,
   image: String,
   middleName: String,
@@ -34,7 +34,7 @@ const userScheme = new Schema({
       settings: { C: Boolean, R: Boolean, U: Boolean, D: Boolean }
   },
   surName: String,
-  username: {type:String, unique: true},
+  username: String,
   password: String, 
   accessToken: String,
   refreshToken: String,
@@ -148,7 +148,7 @@ router.post('/api/registration', (req, res, next) => {
       permission: {
         chat: { C: true, R: true, U: true, D: true },
         news: { C: false, R: true, U: false, D: false },
-        settings: { C: false, R: false, U: false, D: false }
+        settings: { C: false, R: false, U: false, D: false },
         /**for admin**/
         /*chat: { C: true, R: true, U: true, D: true },
         news: { C: true, R: true, U: true, D: true },
@@ -159,6 +159,7 @@ router.post('/api/registration', (req, res, next) => {
       accessTokenExpiredAt: Date.now(),
       refreshTokenExpiredAt: Date.now()
     })
+    console.log('num')
     user.save()
     .then(function(doc){
       res.send(doc)
@@ -180,7 +181,6 @@ router.get("/api/profile", function(req, res){
    User.findById(userId)
    .then(function(doc){
      res.send(doc)
-     res.sendFile('index.html', { root: path.join(__dirname,'../build')})
    })
    .catch(function (err){
     return res.status(401).json({message: err})
