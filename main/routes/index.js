@@ -146,8 +146,8 @@ router.post('/api/registration', (req, res, next) => {
       password: req.body.password,
       image: null,
       permission: {
-        chat: { C: false, R: true, U: true, D: true },
-        news: { C: false, R: true, U: true, D: false },
+        chat: { C: true, R: true, U: true, D: true },
+        news: { C: false, R: true, U: false, D: false },
         settings: { C: false, R: false, U: false, D: false }
         /**for admin**/
         /*chat: { C: true, R: true, U: true, D: true },
@@ -180,6 +180,7 @@ router.get("/api/profile", function(req, res){
    User.findById(userId)
    .then(function(doc){
      res.send(doc)
+     res.sendFile('index.html', { root: path.join(__dirname,'../build')})
    })
    .catch(function (err){
     return res.status(401).json({message: err})
