@@ -24,7 +24,7 @@ useNewUrlParser: true,
 console.log('DB Connection Error: ${err.message}');
 });
 const userScheme = new Schema({
-  id: {type:String, unique: true},
+  id: String,
   firstName: String,
   image: String,
   middleName: String,
