@@ -3,27 +3,22 @@
 /**
  * Module dependencies.
  */
-
 var app = require('../main/app');
 var debug = require('debug')('server:server');
 var http = require('http');
 var bodyParser = require("body-parser");
 var server = http.createServer(app);
-//var ExtractJwt = passportJWT.ExtractJwt;
-//var JwtStrategy = passportJWT.Strategy;
-var jwt = require('jsonwebtoken');
-var passportJWT = require("passport-jwt");
+const io = require('socket.io')(server);
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-const io = require('socket.io').listen(server);
 /**
  * Get port from environment and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
-
 /**
  * Create HTTP server.
  */
@@ -81,8 +76,7 @@ function onError(error) {
 /**
  * Listen on provided port, on all network interfaces.
  */
-
-server.listen(port);
+server.listen(port)
 server.on('error', onError);
 server.on('listening', onListening);
 /**
@@ -98,7 +92,7 @@ function onListening() {
 }
 var users = []
 var messages = []
-io.on('connection', function connection (socket) {
+io.on('connection', (socket) => {
   // socket.emit('users:connect', { userId: userProfile.id, username: userProfile.username });
   socket.on('users:connect', data => {
     let user = { 
@@ -107,8 +101,8 @@ io.on('connection', function connection (socket) {
       userId: data.userId
     }
     users.push(user)
-    socket.emit('users:list', users)
-    socket.emit('users:add', users)
+    io.emit('users:add', users)
+    io.emit('users:list', users)
   })
   //socket.emit('message:add', { senderId: userProfile.id, recipientId: selectedRoom.recipientId, roomId: selectedRoom.socketId, text: messageText });
 
@@ -126,9 +120,9 @@ io.on('connection', function connection (socket) {
       }
     }
     messages.push(message)
-    socket.emit('message:add', message)
+    io.emit('message:add', message)
   })
-  //socket.emit('message:history', { recipientId: userId, userId: userProfile.id })
+  //socket.emit8('message:history', { recipientId: userId, userId: userProfile.id })
   socket.on('message:history', function (data) {
     //Нужно вернуть пользователю список сообщений диалога с выбранным пользователем. 
     //Параметры: recipientId - id пользователя-получателя (чат с которым мы открыли), 
@@ -141,7 +135,7 @@ io.on('connection', function connection (socket) {
         }
       }) 
     console.log(send_messages)
-    socket.emit('message:history', send_messages)
+    io.emit('message:history', send_messages)
   })
   //Нужно передать всем подключенным пользователям socketId отключившегося пользователя 
   //(с помощью события users:leave
